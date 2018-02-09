@@ -34,6 +34,45 @@ def join_data cars_list, rents_list
     return cars_list
 end
 
+def calculate_nb_days start_date, end_date
+  nb_days = 0
+  nb_days += Time.parse(end_date) - Time.parse(start_date)
+  nb_days = (nb_days / (60*60*24)) + 1
+  nb_days = nb_days.round
+  return nb_days
+end
+
+def calculate_price_by_day car, rent
+  nb_days = calculate_nb_days rent['start_date'], rent['end_date']
+  offre = adjust_price_by_day car['price_per_day'].to_i, nb_days
+  price_by_day = (nb_days.to_i * car['price_per_day'].to_i) - offre
+  return price_by_day
+end
+
+
+def calculate_price_by_km car, rent
+  nb_km = 0
+  nb_km += rent['distance']
+  price_by_km = nb_km.to_i * car['price_per_km'].to_i
+  return price_by_km
+end
+
+def adjust_price_by_day price, nb_days
+  result = 0
+  if nb_days > 10
+    result += (nb_days - 10) * (price * (50.0/100.0))
+    nb_days = 10
+  end
+  if nb_days > 4
+    result += (nb_days - 4) * (price * (30.0/100.0))
+    nb_days = 4
+  end
+  if nb_days > 1
+    result += (nb_days - 1) * (price * (10.0/100.0))
+  end
+  return result
+end
+
 def calculate_price_by_cars cars_list
   result = Hash.new
   result['rentals'] = Array.new
@@ -43,28 +82,9 @@ def calculate_price_by_cars cars_list
     nb_km = 0
 
     car['rentals'].each do |rent|
-      puts rent
-      nb_days += Time.parse(rent['end_date']) - Time.parse(rent['start_date'])
-      nb_days = (nb_days / (60*60*24)) + 1
-      nb_days = nb_days.round
-
-      price_by_day = nb_days.to_i * car['price_per_day'].to_i
-
-      nb_km += rent['distance']
-      price_by_km = nb_km.to_i * car['price_per_km'].to_i
-
-
+      price_by_day = calculate_price_by_day car, rent
+      price_by_km = calculate_price_by_km car, rent
       price = price_by_km + price_by_day
-      puts price
-      if nb_days > 1
-        price -= price * (10.0/100.0)
-      elsif nb_days > 4
-        price -= price * (30.0/100.0)
-      elsif nb_days > 10
-        price -= price * (50.0/100.0)
-      end
-      puts price
-
       tmp_rent = {
           :id =>  rent['id'],
           :price => price.round
