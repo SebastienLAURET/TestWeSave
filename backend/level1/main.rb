@@ -80,10 +80,7 @@ end
 
 
 dict_data = JSON.parse read_file "data.json"
-puts dict_data.inspect
 cars_list = join_data dict_data['cars'], dict_data['rentals']
-puts cars_list.inspect
 result = calculate_price_by_cars cars_list
-puts result
 
 write_result_in_file "out.json", JSON.generate(result)

@@ -87,7 +87,6 @@ def calculate_commission price, rent
 end
 
 def calculate_options rent
-  puts rent['deductible_reduction'].inspect
   reduc = 400 * ((rent['deductible_reduction'] == true) ? calculate_nb_days(rent['start_date'], rent['end_date']) : 0)
   result = {
     :deductible_reduction => reduc
@@ -122,7 +121,6 @@ def calculate_price_by_cars cars_list
 end
 
 def calculate_action_driver rent
-  puts rent
   amount = rent[:price]  + rent[:options][:deductible_reduction]
   new_action = {
     :who => "driver",

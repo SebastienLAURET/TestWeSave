@@ -87,7 +87,6 @@ def calculate_commission price, rent
 end
 
 def calculate_options rent
-  puts rent['deductible_reduction'].inspect
   reduc = 400 * ((rent['deductible_reduction'] == true) ? calculate_nb_days(rent['start_date'], rent['end_date']) : 0)
   result = {
     :deductible_reduction => reduc
