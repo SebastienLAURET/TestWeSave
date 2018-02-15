@@ -1,10 +1,8 @@
 module Drivy
 
-  module Main
-    
-    def self.start
-      puts "hello word"
-    end
+  def self.start
+    puts "hello word"
+    Rent::Rent.new
 
   end
 
