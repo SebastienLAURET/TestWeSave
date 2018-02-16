@@ -23,10 +23,12 @@ module Drivy
         @car = car
         @commissions = Commission.new calculate_price, calculate_nb_days
       end
+
       def calculate_options
         reduc = 0
         reduc = 400 * calculate_nb_days if @deductible_reduction
       end
+
       def calculate_nb_days
         nb_second = @end_date - @start_date
         nb_days = (nb_second / SECOND_IN_DAY) + 1
@@ -37,8 +39,24 @@ module Drivy
         calculate_price_per_km + calculate_price_per_day
       end
 
+      def to_hash
+        {
+          id: @id,
+          car_id: @car_id,
+          start_date: @start_date,
+          end_date: @end_date,
+          distance: @distance,
+          deductible_reduction: @deductible_reduction,
+          commissions: @commissions
+        }
+      end
+
+      def to_json *arg
+        JSON.generate to_hash
+      end
+
       private
-      
+
       def calculate_price_per_km
         (@distance * @car.price_per_km)
       end
