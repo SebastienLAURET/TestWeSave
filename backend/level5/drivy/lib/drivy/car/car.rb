@@ -1,10 +1,21 @@
 module Drivy
   module Car
+    def self.load_data filename
+      file = File.read(filename)
+      data_dict = JSON.parse(file)
+      cars = data_dict['cars'].map { |car|  Car.new car, data_dict['cars'] }
+      Rent::load_rents_by_id_cars cars, data_dict['rentals']
+      cars
+    end
+
     class Car
+
       attr_accessor :id, :price_per_day, :price_per_km, :rents
 
-      def initialize
-
+      def initialize car_dict, rents_list = nil
+        @id = car_dict["id"]
+        @price_per_day = car_dict["price_per_day"]
+        @price_per_km = car_dict["price_per_km"]
       end
 
     end
