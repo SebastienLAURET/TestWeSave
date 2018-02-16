@@ -18,6 +18,18 @@ module Drivy
         @price_per_km = car_dict["price_per_km"]
       end
 
+      def to_hash
+        {
+          id: @id,
+          price_per_day: @price_per_day,
+          price_per_km: @price_per_km,
+          rents: @rents
+        }
+      end
+
+      def to_json *arg
+        JSON.generate to_hash
+      end
     end
   end
 end
