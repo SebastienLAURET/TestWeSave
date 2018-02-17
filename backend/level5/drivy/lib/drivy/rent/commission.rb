@@ -9,7 +9,7 @@ module Drivy
       attr_accessor :assistance_fee, :drivy_fee
 
       def initialize(price, nb_days)
-        calculate_Commission! price
+        calculate_commission! price
         calculate_insurance_fee!
         calculate_assistance_fee! nb_days
         calculate_drivy_fee!
@@ -34,7 +34,7 @@ module Drivy
       end
 
       def calculate_commission!(price)
-        @commission_total = calculate_Commission price
+        @commission_total = calculate_commission price
       end
 
       def calculate_insurance_fee
