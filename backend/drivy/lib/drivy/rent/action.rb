@@ -13,27 +13,44 @@ module Drivy
 
       def self.generate_driver_action(rent)
         amount = rent.calculate_price_with_reduction
-        Action.new Action::DRIVER, Action::DEBIT, amount
+        type = def_driver_type amount
+        Action.new DRIVER, type, amount.abs
       end
 
       def self.generate_owner_action(rent)
         amount = rent.calculate_price_without_commission
-        Action.new Action::OWNER, Action::CREDIT, amount
+        type = def_default_type amount
+        Action.new Action::OWNER, type, amount.abs
       end
 
       def self.generate_insurance_action(rent)
         amount = rent.calculate_commission.insurance_fee
-        Action.new Action::INSURANCE, Action::CREDIT, amount
+        type = def_default_type amount
+        Action.new Action::INSURANCE, type, amount.abs
       end
 
       def self.generate_assistance_action(rent)
         amount = rent.calculate_commission.assistance_fee
-        Action.new Action::ASSISTANCE, Action::CREDIT, amount
+        type = def_default_type amount
+        Action.new Action::ASSISTANCE, type, amount.abs
       end
 
       def self.generate_drivy_action(rent)
         amount = rent.calculate_commission.drivy_fee + rent.calculate_options.deductible_reduction
-        Action.new Action::DRIVY, Action::CREDIT, amount
+        type = def_default_type amount
+        Action.new Action::DRIVY, type, amount.abs
+      end
+
+      def self.def_default_type amount
+        if amount > 0
+          return CREDIT
+        else
+          return DEBIT
+        end
+      end
+
+      def self.def_driver_type amount
+        def_default_type (-amount)
       end
 
       attr_accessor :who, :type, :amount

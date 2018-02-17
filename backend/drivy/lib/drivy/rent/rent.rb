@@ -1,11 +1,15 @@
 module Drivy
   module Rent
     def self.load_rents_by_id_cars(cars, rents_list)
+      rents = []
       rents_list.map do |rent_dict|
         selected_car = cars.select { |car| rent_dict['car_id'] == car.id }.first
-        selected_car.rents ||= []
-        selected_car.rents << Rent.new(rent_dict, selected_car)
+        selected_car.rents = [] if selected_car.rents.nil?
+        new_rent = Rent.new(rent_dict, selected_car)
+        selected_car.rents << new_rent
+        rents << new_rent
       end
+      rents
     end
 
     class Rent
@@ -20,6 +24,7 @@ module Drivy
       COMMISSION = 'commission'.freeze
       ACTIONS = 'actions'.freeze
       OPTIONS = 'options'.freeze
+      RENTAL_MODIFICATIONS = 'rental_modifications'.freeze
       # OPERATION VALUE
       SECOND_IN_DAY = (60 * 60 * 24)
       DISCOUNT_ARR = [
@@ -29,7 +34,8 @@ module Drivy
       ].freeze
 
       attr_accessor :id, :car_id, :start_date, :end_date
-      attr_accessor :distance, :deductible_reduction, :car
+      attr_accessor :distance, :deductible_reduction
+      attr_accessor :rental_modifications, :car
 
       def initialize(rent_dict, car)
         @id = rent_dict[ID]
@@ -42,7 +48,7 @@ module Drivy
       end
 
       def calculate_options
-        Options.new calculate_nb_days, @deductible_reduction
+        Options.new calculate_nb_days, deductible_reduction
       end
 
       def calculate_commission
@@ -50,7 +56,7 @@ module Drivy
       end
 
       def calculate_nb_days
-        nb_second = @end_date - @start_date
+        nb_second = end_date - start_date
         nb_days = (nb_second / SECOND_IN_DAY) + 1
         nb_days.round
       end
@@ -74,20 +80,22 @@ module Drivy
         actions_list << Action.generate_insurance_action(self)
         actions_list << Action.generate_assistance_action(self)
         actions_list << Action.generate_drivy_action(self)
+        actions_list
       end
 
       def to_hash
         new_hach = {}
         new_hach[ID] = @id
-        new_hach[CAR_ID] = @car_id
-        new_hach[START_DATE] = @start_date
-        new_hach[END_DATE] = @end_date
-        new_hach[DISTANCE] = @distance
-        new_hach[DEDUCTIBLE_REDUCTION] = @deductible_reduction,
+        new_hach[CAR_ID] = car_id unless car_id.nil?
+        new_hach[START_DATE] = start_date  unless start_date.nil?
+        new_hach[END_DATE] = end_date unless end_date.nil?
+        new_hach[DISTANCE] = distance unless distance.nil?
+        new_hach[DEDUCTIBLE_REDUCTION] = deductible_reduction unless deductible_reduction.nil?
         new_hach[PRICE] = calculate_price
         new_hach[COMMISSION] = calculate_commission.to_hash
         new_hach[OPTIONS] = calculate_options.to_hash
         new_hach[ACTIONS] = generate_actions_list.map(&:to_hash)
+        new_hach[RENTAL_MODIFICATIONS] = rental_modifications.map(&:to_hash) unless rental_modifications.nil?
         new_hach
       end
 
@@ -98,11 +106,11 @@ module Drivy
       private
 
       def calculate_price_per_km
-        (@distance * @car.price_per_km)
+        (distance * car.price_per_km)
       end
 
       def calculate_price_per_day
-        (calculate_nb_days * @car.price_per_day) - calculate_discount
+        (calculate_nb_days * car.price_per_day) - calculate_discount
       end
 
       def calculate_discount
@@ -124,7 +132,7 @@ module Drivy
         if nb_days > begin_range
           end_range = nb_days if end_range.nil? || nb_days < end_range
           range = (end_range - begin_range)
-          discount_per_day += range * (@car.price_per_day * discount)
+          discount_per_day += range * (car.price_per_day * discount)
         end
         discount_per_day.round
       end

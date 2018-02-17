@@ -4,7 +4,8 @@ module Drivy
       file = File.read filename
       data_dict = JSON.parse file
       cars = data_dict['cars'].map { |car| Car.new car }
-      Rent.load_rents_by_id_cars cars, data_dict['rentals']
+      rents = Rent.load_rents_by_id_cars cars, data_dict['rentals']
+      Rent.load_rents_modif_by_id_rent rents, data_dict['rental_modifications']
       cars
     end
 

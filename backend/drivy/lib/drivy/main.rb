@@ -2,12 +2,15 @@ module Drivy
   def self.start path
     car_list = Car.load_data "#{path}/data.json"
 
+    #puts JSON.pretty_generate car_list.map(&:to_hash)
+
     rentals_dict = {}
-    rents_list = []
-    car_list.map do |car|
-      car.rents.each { |rent| rents_list << rent.to_hash } unless car.rents.nil?
-    end
-    rentals_dict['rentals'] = rents_list
+
+    rents_list = car_list.select { |car| !car.rents.nil? }.map { |car| car.rents }.flatten
+    rentals_dict['rentals'] = rents_list.map(&:to_hash)
+
+    rents_modif_list = rents_list.select { |rent| !rent.rental_modifications.nil? }.map { |rent| rent.rental_modifications.map(&:to_hash) }.flatten
+    rentals_dict['rental_modifications'] = rents_modif_list.map(&:to_hash) unless rents_modif_list.empty?
 
     file = File.read "#{path}/output.json"
     output_dict = JSON.parse file
@@ -17,7 +20,7 @@ module Drivy
 
   def self.compare_dict(expected, dict)
     expected.each do |key, value|
-#      puts "====#{key}===="
+      #      puts "====#{key}===="
       compare_elem value, dict[key]
     end
   end
@@ -37,11 +40,7 @@ module Drivy
       elsif value.class == Array
         compare_array value, elem
       else
-        if value != elem
-          puts "ERROR :: value expected #{value} value read #{elem}"
-#        else
-#          puts "DONE :: value expected #{value} value read #{elem}"
-        end
+        puts "ERROR :: value expected #{value} value read #{elem}" unless value == elem
       end
     else
       puts "ERROR :: value expected #{value} value read #{elem}"
