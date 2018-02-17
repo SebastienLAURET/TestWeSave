@@ -1,15 +1,15 @@
 module Drivy
-  def self.start
-    car_list = Car.load_data '../data/data.json'
+  def self.start path
+    car_list = Car.load_data "#{path}/data.json"
 
     rentals_dict = {}
     rents_list = []
     car_list.map do |car|
-      car.rents.each { |rent| rents_list << rent.to_hash }
+      car.rents.each { |rent| rents_list << rent.to_hash } unless car.rents.nil?
     end
     rentals_dict['rentals'] = rents_list
 
-    file = File.read '../data/output.json'
+    file = File.read "#{path}/output.json"
     output_dict = JSON.parse file
 
     compare_dict output_dict, rentals_dict
@@ -17,7 +17,7 @@ module Drivy
 
   def self.compare_dict(expected, dict)
     expected.each do |key, value|
-      puts "====#{key}===="
+#      puts "====#{key}===="
       compare_elem value, dict[key]
     end
   end
@@ -39,8 +39,8 @@ module Drivy
       else
         if value != elem
           puts "ERROR :: value expected #{value} value read #{elem}"
-        else
-          puts "DONE :: value expected #{value} value read #{elem}"
+#        else
+#          puts "DONE :: value expected #{value} value read #{elem}"
         end
       end
     else
@@ -56,5 +56,4 @@ module Drivy
     end
     value
   end
-
 end

@@ -2,4 +2,9 @@
 
 $LOAD_PATH.unshift("#{__dir__}/../lib")
 require 'drivy'
-Drivy.start
+Dir["#{__dir__}/../data/level*"].each { |path|
+  puts "=============================================================="
+  puts "Test Directory : #{path}"
+  puts "=============================================================="
+  Drivy.start path
+}
