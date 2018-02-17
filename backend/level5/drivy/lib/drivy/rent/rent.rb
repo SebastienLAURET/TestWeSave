@@ -4,7 +4,7 @@ module Drivy
       rents_list.map do |rent_dict|
         selected_car = cars.select { |car| rent_dict['car_id'] == car.id }.first
         selected_car.rents ||= []
-        selected_car.rents.push Rent.new rent_dict, selected_car
+        selected_car.rents << Rent.new(rent_dict, selected_car)
       end
     end
 
@@ -17,7 +17,6 @@ module Drivy
       DISTANCE = 'distance'.freeze
       DEDUCTIBLE_REDUCTION = 'deductible_reduction'.freeze
       # OPERATION VALUE
-      REDU_PRICE_PER_DAY = 400
       SECOND_IN_DAY = (60 * 60 * 24)
       DISCOUNT_ARR = [
         { begin: 1, end: 4, discount: (10.0 / 100.0) },
@@ -26,7 +25,7 @@ module Drivy
       ].freeze
 
       attr_accessor :id, :car_id, :start_date, :end_date
-      attr_accessor :distance, :deductible_reduction, :commission, :car
+      attr_accessor :distance, :deductible_reduction, :car
 
       def initialize(rent_dict, car)
         @id = rent_dict[ID]
@@ -39,20 +38,11 @@ module Drivy
       end
 
       def calculate_options
-        return REDUC_PRICE_PER_DAY * calculate_nb_days if @deductible_reduction
-        0
-      end
-
-      def calculate_options!
-        @option = calculate_options
+        Options.new calculate_nb_days, @deductible_reduction
       end
 
       def calculate_commission
         Commission.new calculate_price, calculate_nb_days
-      end
-
-      def calculate_commission!
-        @commission = calculate_commission
       end
 
       def calculate_nb_days
@@ -65,8 +55,21 @@ module Drivy
         calculate_price_per_km + calculate_price_per_day
       end
 
-      def generate_actions_list
+      def calculate_price_with_reduction
+        calculate_price + calculate_options.deductible_reduction
+      end
 
+      def calculate_price_without_commission
+        calculate_price - calculate_commission.commission_total
+      end
+
+      def generate_actions_list
+        actions_list = []
+        actions_list << Action.generate_driver_action(self)
+        actions_list << Action.generate_owner_action(self)
+        actions_list << Action.generate_insurance_action(self)
+        actions_list << Action.generate_assistance_action(self)
+        actions_list << Action.generate_drivy_action(self)
       end
 
       def to_hash
@@ -77,7 +80,9 @@ module Drivy
           end_date: @end_date,
           distance: @distance,
           deductible_reduction: @deductible_reduction,
-          commissions: @commissions
+          commissions: calculate_commission.to_hash,
+          options: calculate_options.to_hash,
+          actions: generate_actions_list
         }
       end
 
@@ -99,9 +104,9 @@ module Drivy
         price_discount = 0
 
         DISCOUNT_ARR.each do |disc_dict|
-          begin_r = disc_dict['begin']
-          end_r = disc_dict['end']
-          disc = disc_dict['discount']
+          begin_r = disc_dict[:begin]
+          end_r = disc_dict[:end]
+          disc = disc_dict[:discount]
           price_discount += calculate_discount_per_day begin_r, end_r, disc
         end
         price_discount
