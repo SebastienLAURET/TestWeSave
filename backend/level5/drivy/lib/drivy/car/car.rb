@@ -23,15 +23,15 @@ module Drivy
       end
 
       def calculate_options
-        @rents.map &:calculate_options
+        @rents.map(&:calculate_options)
       end
 
       def calculate_commissions
-        @rents.map &:calculate_commission
+        @rents.map(&:calculate_commission)
       end
 
       def generate_actions_list
-        @rents.map &:generate_actions_list
+        @rents.map(&:generate_actions_list)
       end
 
       def to_hash
@@ -44,9 +44,8 @@ module Drivy
       end
 
       def to_json(*_)
-        JSON.generate to_hash
+        to_hash.to_json
       end
-
     end
   end
 end

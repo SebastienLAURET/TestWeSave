@@ -53,7 +53,7 @@ module Drivy
       end
 
       def to_json(*_)
-        JSON.generate to_hash
+        to_hash.to_json
       end
     end
   end
