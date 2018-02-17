@@ -80,6 +80,7 @@ module Drivy
           end_date: @end_date,
           distance: @distance,
           deductible_reduction: @deductible_reduction,
+          price: calculate_price,
           commissions: calculate_commission.to_hash,
           options: calculate_options.to_hash,
           actions: generate_actions_list
@@ -117,11 +118,11 @@ module Drivy
         nb_days = calculate_nb_days
 
         if nb_days > begin_range
-          end_range = nb_days if end_range.nil? || nb_days > end_range
+          end_range = nb_days if end_range.nil? || nb_days < end_range
           range = (end_range - begin_range)
           discount_per_day += range * (@car.price_per_day * discount)
         end
-        discount_per_day
+        discount_per_day.round
       end
     end
   end

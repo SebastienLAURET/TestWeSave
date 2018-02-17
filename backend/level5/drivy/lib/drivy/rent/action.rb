@@ -32,7 +32,7 @@ module Drivy
       end
 
       def self.generate_drivy_action(rent)
-        amount = rent.calculate_commission.drivy_fee
+        amount = rent.calculate_commission.drivy_fee + rent.calculate_options.deductible_reduction
         Action.new Action::DRIVY, Action::CREDIT, amount
       end
 

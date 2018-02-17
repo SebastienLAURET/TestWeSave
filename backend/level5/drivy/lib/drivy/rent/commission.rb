@@ -30,7 +30,7 @@ module Drivy
       private
 
       def calculate_commission(price)
-        price * MARGES
+        (price * MARGES).round
       end
 
       def calculate_commission!(price)
@@ -38,7 +38,7 @@ module Drivy
       end
 
       def calculate_insurance_fee
-        @commission_total / 2.0
+        (@commission_total / 2.0).round
       end
 
       def calculate_insurance_fee!
