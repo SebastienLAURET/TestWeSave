@@ -16,6 +16,10 @@ module Drivy
       END_DATE = 'end_date'.freeze
       DISTANCE = 'distance'.freeze
       DEDUCTIBLE_REDUCTION = 'deductible_reduction'.freeze
+      PRICE = 'price'.freeze
+      COMMISSION = 'commission'.freeze
+      ACTIONS = 'actions'.freeze
+      OPTIONS = 'options'.freeze
       # OPERATION VALUE
       SECOND_IN_DAY = (60 * 60 * 24)
       DISCOUNT_ARR = [
@@ -80,10 +84,10 @@ module Drivy
         new_hach[END_DATE] = @end_date
         new_hach[DISTANCE] = @distance
         new_hach[DEDUCTIBLE_REDUCTION] = @deductible_reduction,
-        new_hach['price'] = calculate_price
-        new_hach['commissions'] = calculate_commission.to_hash
-        new_hach['options'] = calculate_options.to_hash
-        new_hach['actions'] = generate_actions_list.map(&:to_hash)
+        new_hach[PRICE] = calculate_price
+        new_hach[COMMISSION] = calculate_commission.to_hash
+        new_hach[OPTIONS] = calculate_options.to_hash
+        new_hach[ACTIONS] = generate_actions_list.map(&:to_hash)
         new_hach
       end
 

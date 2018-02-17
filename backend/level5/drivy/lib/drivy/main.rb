@@ -17,45 +17,44 @@ module Drivy
 
   def self.compare_dict(expected, dict)
     expected.each do |key, value|
-
-      if value.class == dict[key].class
-        if value.class == Hash
-          compare_dict value, dict[key]
-        elsif value.class == Array
-          compare_array value, dict[key]
-        else
-          puts "ERROR :: [#{key}] value expected #{value} value read #{dict[key]}" if value != dict[key]
-        end
-      else
-        puts "ERROR :: [#{key}] class expected #{value.class} class read #{dict[key].class}"
-      end
+      puts "====#{key}===="
+      compare_elem value, dict[key]
     end
   end
+
   def self.compare_array(expected, array)
-    expected.each do |value|
-      selected_elem = array.select do |elem|
-        flag = false
-        if !value['id'].nil?
-          flag = (elem['id'] == value['id'])
-        else
-          flag = (elem['who'] == value['who'])
-        end
-        flag
-      end
-      selected_elem = selected_elem.first unless selected_elem.empty?
-      if value.class == selected_elem.class
-        if value.class == Hash
-          compare_dict value, selected_elem
-        elsif value.class == Array
-          compare_array value, selected_elem
-        else
-          puts "ERROR :: value expected #{value} value read #{selected_elem}" if value != selected_elem
-        end
-      else
-        puts "ERROR :: value expected #{value} value read #{selected_elem}"
-      end
+    if array.size == expected.size
+      array.sort! { |elemA, elemB| sort_dict elemA, elemB }
+      expected.sort! { |elemA, elemB| sort_dict elemA, elemB }
+      array.size.times { |index| compare_elem(expected[index], array[index]) }
     end
   end
 
+  def self.compare_elem(value, elem)
+    if value.class == elem.class
+      if value.class == Hash
+        compare_dict value, elem
+      elsif value.class == Array
+        compare_array value, elem
+      else
+        if value != elem
+          puts "ERROR :: value expected #{value} value read #{elem}"
+        else
+          puts "DONE :: value expected #{value} value read #{elem}"
+        end
+      end
+    else
+      puts "ERROR :: value expected #{value} value read #{elem}"
+    end
+  end
+
+  def self.sort_dict(elemA, elemB)
+    if !elemA['id'].nil?
+      value = (elemA['id'] <=> elemB['id'])
+    else
+      value = (elemA['who'] <=> elemB['who'])
+    end
+    value
+  end
 
 end
