@@ -1,21 +1,24 @@
 module Drivy
   module Car
-    def self.load_data filename
-      file = File.read(filename)
-      data_dict = JSON.parse(file)
-      cars = data_dict['cars'].map { |car|  Car.new car, data_dict['cars'] }
-      Rent::load_rents_by_id_cars cars, data_dict['rentals']
+    def self.load_data(filename)
+      file = File.read filename
+      data_dict = JSON.parse file
+      cars = data_dict['cars'].map { |car| Car.new car }
+      Rent.load_rents_by_id_cars cars, data_dict['rentals']
       cars
     end
 
     class Car
+      ID = 'id'.freeze
+      PRICE_PER_DAY = 'price_per_day'.freeze
+      PRICE_PER_KM = 'price_per_km'.freeze
 
       attr_accessor :id, :price_per_day, :price_per_km, :rents
 
-      def initialize car_dict, rents_list = nil
-        @id = car_dict["id"]
-        @price_per_day = car_dict["price_per_day"]
-        @price_per_km = car_dict["price_per_km"]
+      def initialize(car_dict)
+        @id = car_dict[ID]
+        @price_per_day = car_dict[PRICE_PER_DAY]
+        @price_per_km = car_dict[PRICE_PER_KM]
       end
 
       def to_hash
@@ -27,7 +30,7 @@ module Drivy
         }
       end
 
-      def to_json *arg
+      def to_json(*_)
         JSON.generate to_hash
       end
     end

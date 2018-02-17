@@ -3,10 +3,10 @@ module Drivy
     class Action
       attr_accessor :who, :type, :amount
 
-      def initialize who, type, amount
+      def initialize(who, type, amount)
         @who = who
         @type = type
-        @amount= amount
+        @amount = amount
       end
 
       def to_hash
@@ -17,7 +17,7 @@ module Drivy
         }
       end
 
-      def to_json *arg
+      def to_json(*_)
         JSON.generate to_hash
       end
     end

@@ -2,4 +2,4 @@
 
 $LOAD_PATH.unshift("#{__dir__}/../lib")
 require 'drivy'
-Drivy::start
+Drivy.start
