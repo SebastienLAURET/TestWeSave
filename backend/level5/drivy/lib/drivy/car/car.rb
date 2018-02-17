@@ -22,6 +22,18 @@ module Drivy
         @price_per_km = car_dict[PRICE_PER_KM]
       end
 
+      def calculate_options
+        @rents.map &:calculate_options
+      end
+
+      def calculate_commissions
+        @rents.map &:calculate_commission
+      end
+
+      def generate_actions_list
+        @rents.map &:generate_actions_list
+      end
+
       def to_hash
         {
           id: @id,
@@ -34,6 +46,7 @@ module Drivy
       def to_json(*_)
         JSON.generate to_hash
       end
+
     end
   end
 end
