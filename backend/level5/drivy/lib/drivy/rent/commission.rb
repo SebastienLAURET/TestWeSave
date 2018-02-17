@@ -1,6 +1,7 @@
 module Drivy
   module Rent
     class Commission
+      # OPERATION VALUE
       MARGES = (30.0 / 100.0)
       ASSISTANCE_PRICE_PER_DAY = 100
 

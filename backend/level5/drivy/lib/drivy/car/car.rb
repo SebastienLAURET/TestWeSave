@@ -9,6 +9,7 @@ module Drivy
     end
 
     class Car
+      # HASH KEY
       ID = 'id'.freeze
       PRICE_PER_DAY = 'price_per_day'.freeze
       PRICE_PER_KM = 'price_per_km'.freeze

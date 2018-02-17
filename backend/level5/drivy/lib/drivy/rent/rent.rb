@@ -9,13 +9,14 @@ module Drivy
     end
 
     class Rent
+      # HASH KEY
       ID = 'id'.freeze
       CAR_ID = 'car_id'.freeze
       START_DATE = 'start_date'.freeze
       END_DATE = 'end_date'.freeze
       DISTANCE = 'distance'.freeze
       DEDUCTIBLE_REDUCTION = 'deductible_reduction'.freeze
-
+      # OPERATION VALUE
       REDU_PRICE_PER_DAY = 400
       SECOND_IN_DAY = (60 * 60 * 24)
       DISCOUNT_ARR = [
@@ -62,6 +63,10 @@ module Drivy
 
       def calculate_price
         calculate_price_per_km + calculate_price_per_day
+      end
+
+      def generate_actions_list
+
       end
 
       def to_hash
