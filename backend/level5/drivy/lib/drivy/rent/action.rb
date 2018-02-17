@@ -45,11 +45,11 @@ module Drivy
       end
 
       def to_hash
-        {
-          who: @who,
-          type: @type,
-          amount: @amount
-        }
+        new_hach = {}
+        new_hach['who'] = @who
+        new_hach['type'] = @type
+        new_hach['amount'] = @amount
+        new_hach
       end
 
       def to_json(*_)

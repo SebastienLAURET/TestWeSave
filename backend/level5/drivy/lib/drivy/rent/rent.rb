@@ -73,18 +73,18 @@ module Drivy
       end
 
       def to_hash
-        {
-          id: @id,
-          car_id: @car_id,
-          start_date: @start_date,
-          end_date: @end_date,
-          distance: @distance,
-          deductible_reduction: @deductible_reduction,
-          price: calculate_price,
-          commissions: calculate_commission.to_hash,
-          options: calculate_options.to_hash,
-          actions: generate_actions_list
-        }
+        new_hach = {}
+        new_hach[ID] = @id
+        new_hach[CAR_ID] = @car_id
+        new_hach[START_DATE] = @start_date
+        new_hach[END_DATE] = @end_date
+        new_hach[DISTANCE] = @distance
+        new_hach[DEDUCTIBLE_REDUCTION] = @deductible_reduction,
+        new_hach['price'] = calculate_price
+        new_hach['commissions'] = calculate_commission.to_hash
+        new_hach['options'] = calculate_options.to_hash
+        new_hach['actions'] = generate_actions_list.map(&:to_hash)
+        new_hach
       end
 
       def to_json(*_)

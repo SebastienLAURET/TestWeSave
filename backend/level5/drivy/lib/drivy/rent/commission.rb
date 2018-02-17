@@ -16,11 +16,11 @@ module Drivy
       end
 
       def to_hash
-        {
-          insurance_fee: @insurance_fee,
-          assistance_fee: @assistance_fee,
-          drivy_fee: @drivy_fee
-        }
+        new_hach = {}
+        new_hach['insurance_fee'] = @insurance_fee
+        new_hach['assistance_fee'] = @assistance_fee
+        new_hach['drivy_fee'] = @drivy_fee
+        new_hach
       end
 
       def to_json(*_)

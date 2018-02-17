@@ -11,9 +11,9 @@ module Drivy
       end
 
       def to_hash
-        {
-          deductible_reduction: @deductible_reduction
-        }
+        new_hach = {}
+        new_hach['deductible_reduction'] = @deductible_reduction
+        new_hach
       end
 
       def to_json(*_)
