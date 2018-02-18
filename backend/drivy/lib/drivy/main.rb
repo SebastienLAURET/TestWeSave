@@ -12,10 +12,16 @@ module Drivy
     rents_modif_list = rents_list.select { |rent| !rent.rental_modifications.nil? }.map { |rent| rent.rental_modifications.map(&:to_hash) }.flatten
     rentals_dict['rental_modifications'] = rents_modif_list.map(&:to_hash) unless rents_modif_list.empty?
 
-    file = File.read "#{path}/output.json"
-    output_dict = JSON.parse file
+    compare_to_output "#{path}/output.json", rentals_dict
+  end
 
+  def self.compare_to_output(filename, rentals_dict)
+    file = File.read filename
+    output_dict = JSON.parse file
     compare_dict output_dict, rentals_dict
+    puts "Success"
+  rescue CompareError => err
+    puts err
   end
 
   def self.compare_dict(expected, dict)
@@ -40,10 +46,10 @@ module Drivy
       elsif value.class == Array
         compare_array value, elem
       else
-        puts "ERROR :: value expected #{value} value read #{elem}" unless value == elem
+        raise CompareError, "ERROR :: value expected #{value} value read #{elem}" unless value == elem
       end
     else
-      puts "ERROR :: value expected #{value} value read #{elem}"
+      raise CompareError, "ERROR :: value expected #{value} value read #{elem}"
     end
   end
 
@@ -54,5 +60,11 @@ module Drivy
       value = (elemA['who'] <=> elemB['who'])
     end
     value
+  end
+
+  class Error < RuntimeError
+  end
+
+  class CompareError < Error
   end
 end
