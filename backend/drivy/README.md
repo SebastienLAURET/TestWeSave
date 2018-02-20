@@ -4,16 +4,14 @@
 
 ## Installation
 
-installer la ruby:
-
+installer ruby:
 ```
 sudo apt-get instal ruby
 ```
 
 ## Utilisation
 
-Allez a dans le repertoir ```path/to/project/lib```
-
+Allez a dans le repertoire : ```path/to/project/bin```
 ````
 chmod +x drivy
 ./drivy
