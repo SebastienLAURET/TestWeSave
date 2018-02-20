@@ -20,7 +20,7 @@ module Drivy
       new_rental_modif
     end
 
-    class RentalModifications < Rent
+    class RentalModifications < RentCalcul
       # HASH KEY
       RENTAL_ID = 'rental_id'.freeze
 
