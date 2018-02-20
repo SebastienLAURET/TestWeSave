@@ -1,6 +1,10 @@
 module Drivy
   module Rent
     class Action
+      # HASH KEY
+      WHO='who'.freeze
+      TYPE='type'.freeze
+      AMOUNT='amount'.freeze
       # WHO VALUE
       DRIVER = 'driver'.freeze
       OWNER = 'owner'.freeze
@@ -36,12 +40,14 @@ module Drivy
       end
 
       def self.generate_drivy_action(rent)
-        amount = rent.calculate_commission.drivy_fee + rent.calculate_options.deductible_reduction
+        deductible_reduction = rent.calculate_options.deductible_reduction
+        drivy_fee = rent.calculate_commission.drivy_fee
+        amount = drivy_fee + deductible_reduction
         type = def_default_type amount
         Action.new Action::DRIVY, type, amount.abs
       end
 
-      def self.def_default_type amount
+      def self.def_default_type(amount)
         if amount > 0
           return CREDIT
         else
@@ -49,8 +55,8 @@ module Drivy
         end
       end
 
-      def self.def_driver_type amount
-        def_default_type (-amount)
+      def self.def_driver_type(amount)
+        def_default_type(-amount)
       end
 
       attr_accessor :who, :type, :amount
@@ -63,9 +69,9 @@ module Drivy
 
       def to_hash
         new_hach = {}
-        new_hach['who'] = @who
-        new_hach['type'] = @type
-        new_hach['amount'] = @amount
+        new_hach[WHO] = @who
+        new_hach[TYPE] = @type
+        new_hach[AMOUNT] = @amount
         new_hach
       end
 

@@ -1,17 +1,15 @@
 module Drivy
+  RENTALS = 'rentals'
+
   def self.start path
     car_list = Car.load_data "#{path}/data.json"
-
-    #puts JSON.pretty_generate car_list.map(&:to_hash)
-
     rentals_dict = {}
-
     rents_list = car_list.select { |car| !car.rents.nil? }.map { |car| car.rents }.flatten
-    rentals_dict['rentals'] = rents_list.map(&:to_hash)
-
+    rentals_dict[RENTALS] = rents_list.map(&:to_hash)
     rents_modif_list = rents_list.select { |rent| !rent.rental_modifications.nil? }.map { |rent| rent.rental_modifications.map(&:to_hash) }.flatten
-    rentals_dict['rental_modifications'] = rents_modif_list.map(&:to_hash) unless rents_modif_list.empty?
-
+    unless rents_modif_list.empty?
+      rentals_dict[Rent::Rent::RENTAL_MODIFICATIONS] = rents_modif_list.map(&:to_hash)
+    end
     compare_to_output "#{path}/output.json", rentals_dict
   end
 
@@ -25,10 +23,7 @@ module Drivy
   end
 
   def self.compare_dict(expected, dict)
-    expected.each do |key, value|
-      #      puts "====#{key}===="
-      compare_elem value, dict[key]
-    end
+    expected.each { |key, value| compare_elem value, dict[key] }
   end
 
   def self.compare_array(expected, array)
@@ -54,10 +49,10 @@ module Drivy
   end
 
   def self.sort_dict(elemA, elemB)
-    if !elemA['id'].nil?
-      value = (elemA['id'] <=> elemB['id'])
+    if !elemA[Rent::Rent::ID].nil?
+      value = (elemA[Rent::Rent::ID] <=> elemB[Rent::Rent::ID])
     else
-      value = (elemA['who'] <=> elemB['who'])
+      value = (elemA[Rent::Action::WHO] <=> elemB[Rent::Action::WHO])
     end
     value
   end
