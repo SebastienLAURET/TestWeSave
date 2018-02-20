@@ -29,8 +29,12 @@ module Drivy
       def initialize(modif_dict, rent)
         @id = modif_dict[ID]
         @rental_id = modif_dict[RENTAL_ID]
-        @start_date = Time.parse(modif_dict[START_DATE]) unless modif_dict[START_DATE].nil?
-        @end_date = Time.parse(modif_dict[END_DATE]) unless modif_dict[END_DATE].nil?
+        unless modif_dict[START_DATE].nil?
+          @start_date = Time.parse(modif_dict[START_DATE])
+        end
+        unless modif_dict[END_DATE].nil?
+          @end_date = Time.parse(modif_dict[END_DATE])
+        end
         @distance = modif_dict[DISTANCE]
         @rent = rent
       end
