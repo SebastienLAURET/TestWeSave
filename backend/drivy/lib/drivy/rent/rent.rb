@@ -57,7 +57,7 @@ module Drivy
 
       def calculate_nb_days
         nb_second = end_date - start_date
-        nb_days = (nb_second / SECOND_IN_DAY) + 1
+        nb_days = (nb_second.to_i / SECOND_IN_DAY) + 1
         nb_days.round
       end
 
@@ -66,11 +66,11 @@ module Drivy
       end
 
       def calculate_price_with_reduction
-        calculate_price + calculate_options.deductible_reduction
+        calculate_price + calculate_options.deductible_reduction.to_i
       end
 
       def calculate_price_without_commission
-        calculate_price - calculate_commission.commission_total
+        calculate_price - calculate_commission.commission_total.to_i
       end
 
       def generate_actions_list
@@ -87,7 +87,7 @@ module Drivy
         new_hach = {}
         new_hach[ID] = @id
         new_hach[CAR_ID] = car_id unless car_id.nil?
-        new_hach[START_DATE] = start_date  unless start_date.nil?
+        new_hach[START_DATE] = start_date unless start_date.nil?
         new_hach[END_DATE] = end_date unless end_date.nil?
         new_hach[DISTANCE] = distance unless distance.nil?
         new_hach[DEDUCTIBLE_REDUCTION] = deductible_reduction unless deductible_reduction.nil?
@@ -106,11 +106,11 @@ module Drivy
       private
 
       def calculate_price_per_km
-        (distance * car.price_per_km)
+        (distance.to_i * car.price_per_km.to_i)
       end
 
       def calculate_price_per_day
-        (calculate_nb_days * car.price_per_day) - calculate_discount
+        (calculate_nb_days * car.price_per_day.to_i) - calculate_discount
       end
 
       def calculate_discount
@@ -130,9 +130,9 @@ module Drivy
         nb_days = calculate_nb_days
 
         if nb_days > begin_range
-          end_range = nb_days if end_range.nil? || nb_days < end_range
-          range = (end_range - begin_range)
-          discount_per_day += range * (car.price_per_day * discount)
+          end_range = nb_days.to_i if end_range.nil? || nb_days.to_i < end_range.to_i
+          range = (end_range.to_i - begin_range.to_i)
+          discount_per_day += range.to_i * (car.price_per_day.to_i * discount)
         end
         discount_per_day.round
       end

@@ -2,9 +2,9 @@ module Drivy
   module Rent
     class Action
       # HASH KEY
-      WHO='who'.freeze
-      TYPE='type'.freeze
-      AMOUNT='amount'.freeze
+      WHO = 'who'.freeze
+      TYPE = 'type'.freeze
+      AMOUNT = 'amount'.freeze
       # WHO VALUE
       DRIVER = 'driver'.freeze
       OWNER = 'owner'.freeze
@@ -49,9 +49,9 @@ module Drivy
 
       def self.def_default_type(amount)
         if amount > 0
-          return CREDIT
+          CREDIT
         else
-          return DEBIT
+          DEBIT
         end
       end
 

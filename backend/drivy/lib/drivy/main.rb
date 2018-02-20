@@ -1,23 +1,40 @@
 module Drivy
-  RENTALS = 'rentals'
+  RENTALS = 'rentals'.freeze
+  SUCCESS = 'Success'.freeze
 
   def self.start path
     car_list = Car.load_data "#{path}/data.json"
-    rentals_dict = {}
-    rents_list = car_list.select { |car| !car.rents.nil? }.map { |car| car.rents }.flatten
-    rentals_dict[RENTALS] = rents_list.map(&:to_hash)
-    rents_modif_list = rents_list.select { |rent| !rent.rental_modifications.nil? }.map { |rent| rent.rental_modifications.map(&:to_hash) }.flatten
-    unless rents_modif_list.empty?
-      rentals_dict[Rent::Rent::RENTAL_MODIFICATIONS] = rents_modif_list.map(&:to_hash)
-    end
+    rentals_dict = convert_car_list_to_dics car_list
     compare_to_output "#{path}/output.json", rentals_dict
+  end
+
+  def self.convert_car_list_to_dics(car_list)
+    rentals_dict = {}
+    rentals_dict[RENTALS] = regroup_rents_list car_list
+    modif_list = regroup_modif_list car_list
+    unless modif_list.empty?
+      rentals_dict[Rent::Rent::RENTAL_MODIFICATIONS] = modif_list.map(&:to_hash)
+    end
+    rentals_dict
+  end
+  def self.regroup_rents_list(car_list)
+    rents_list = car_list.reject { |car| car.rents.nil? }.map(&:rents).flatten
+    rents_list.map(&:to_hash)
+  end
+
+  def self.regroup_modif_list(car_list)
+    rents_list = car_list.reject { |car| car.rents.nil? }.map(&:rents).flatten
+    rents_list.reject! { |rent| rent.rental_modifications.nil? }
+    modif_list = rents_list.map do |rent|
+      rent.rental_modifications.map(&:to_hash)
+    end.flatten
   end
 
   def self.compare_to_output(filename, rentals_dict)
     file = File.read filename
     output_dict = JSON.parse file
     compare_dict output_dict, rentals_dict
-    puts "Success"
+    puts SUCCESS
   rescue CompareError => err
     puts err
   end
@@ -28,8 +45,8 @@ module Drivy
 
   def self.compare_array(expected, array)
     if array.size == expected.size
-      array.sort! { |elemA, elemB| sort_dict elemA, elemB }
-      expected.sort! { |elemA, elemB| sort_dict elemA, elemB }
+      array.sort! { |elem_a, elem_b| sort_dict elem_a, elem_b }
+      expected.sort! { |elem_a, elem_b| sort_dict elem_a, elem_b }
       array.size.times { |index| compare_elem(expected[index], array[index]) }
     end
   end
@@ -48,13 +65,11 @@ module Drivy
     end
   end
 
-  def self.sort_dict(elemA, elemB)
-    if !elemA[Rent::Rent::ID].nil?
-      value = (elemA[Rent::Rent::ID] <=> elemB[Rent::Rent::ID])
-    else
-      value = (elemA[Rent::Action::WHO] <=> elemB[Rent::Action::WHO])
+  def self.sort_dict(elem_a, elem_b)
+    unless elem_a[Rent::Rent::ID].nil?
+      return (elem_a[Rent::Rent::ID] <=> elem_b[Rent::Rent::ID])
     end
-    value
+    (elem_a[Rent::Action::WHO] <=> elem_b[Rent::Action::WHO])
   end
 
   class Error < RuntimeError

@@ -1,17 +1,23 @@
 module Drivy
   module Rent
-    def self.load_rents_modif_by_id_rent(rents_list, rents_modif_list)
+    def self.load_rents_modif_by_id_rent(rents_list, modif_list)
       rents_modifs = []
-      unless rents_modif_list.nil?
-        rents_modif_list.map do |rent_modif_dict|
-          selected_car = rents_list.select { |rent| rent_modif_dict['rental_id'] == rent.id }.first
-          selected_car.rental_modifications ||= []
-          new_rental_modif = RentalModifications.new(rent_modif_dict, selected_car)
-          selected_car.rental_modifications << new_rental_modif
-          rents_modifs << new_rental_modif
+      unless modif_list.nil?
+        modif_list.map do |modif_dict|
+          rents_modifs << create_rents_modif(rents_list, modif_dict)
         end
       end
       rents_modifs
+    end
+
+    def self.create_rents_modif(rents_list, modif_dict)
+      selected_car = rents_list.select do |rent|
+        modif_dict['rental_id'] == rent.id
+      end.first
+      selected_car.rental_modifications ||= []
+      new_rental_modif = RentalModifications.new(modif_dict, selected_car)
+      selected_car.rental_modifications << new_rental_modif
+      new_rental_modif
     end
 
     class RentalModifications < Rent
@@ -38,7 +44,7 @@ module Drivy
       end
 
       def calculate_price
-        super - rent.calculate_price
+        super.to_i - rent.calculate_price.to_i
       end
 
       def calculate_diff_nb_days
@@ -71,7 +77,7 @@ module Drivy
       def to_hash
         new_hach = {}
         new_hach[ID] = @id
-        new_hach[START_DATE] = @start_date  unless @start_date.nil?
+        new_hach[START_DATE] = @start_date unless @start_date.nil?
         new_hach[END_DATE] = @end_date unless @end_date.nil?
         new_hach[DISTANCE] = @distance unless @distance.nil?
         new_hach[DEDUCTIBLE_REDUCTION] = @deductible_reduction unless @deductible_reduction.nil?

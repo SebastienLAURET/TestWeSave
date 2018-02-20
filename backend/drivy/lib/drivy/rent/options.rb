@@ -23,7 +23,7 @@ module Drivy
       private
 
       def calculate_deductible_reduction(nb_day, make_reduction)
-        return REDU_PRICE_PER_DAY * nb_day if make_reduction
+        return REDU_PRICE_PER_DAY * nb_day.to_i if make_reduction
         0
       end
 

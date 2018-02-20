@@ -6,7 +6,7 @@
 
 installer ruby:
 ```
-sudo apt-get instal ruby
+sudo apt-get install ruby
 ```
 
 ## Utilisation
