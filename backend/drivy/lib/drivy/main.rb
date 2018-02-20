@@ -53,15 +53,14 @@ module Drivy
   end
 
   def self.compare_elem(value, elem)
-    if value.class == elem.class
-      if value.class == Hash
-        compare_dict value, elem
-      elsif value.class == Array
-        compare_array value, elem
-      else
-        raise CompareError, "ERROR :: value expected #{value} value read #{elem}" unless value == elem
-      end
-    else
+    unless value.class == elem.class
+      raise CompareError, "ERROR :: value expected #{value} value read #{elem}"
+    end
+    if value.class == Hash
+      compare_dict value, elem
+    elsif value.class == Array
+      compare_array value, elem
+    elsif value != elem
       raise CompareError, "ERROR :: value expected #{value} value read #{elem}"
     end
   end
