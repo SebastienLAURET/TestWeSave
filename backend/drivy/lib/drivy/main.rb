@@ -2,7 +2,7 @@ module Drivy
   RENTALS = 'rentals'.freeze
   SUCCESS = 'Success'.freeze
 
-  def self.start path
+  def self.start(path)
     car_list = Car.load_data "#{path}/data.json"
     rentals_dict = convert_car_list_to_dics car_list
     compare_to_output "#{path}/output.json", rentals_dict
@@ -17,6 +17,7 @@ module Drivy
     end
     rentals_dict
   end
+
   def self.regroup_rents_list(car_list)
     rents_list = car_list.reject { |car| car.rents.nil? }.map(&:rents).flatten
     rents_list.map(&:to_hash)
@@ -25,7 +26,7 @@ module Drivy
   def self.regroup_modif_list(car_list)
     rents_list = car_list.reject { |car| car.rents.nil? }.map(&:rents).flatten
     rents_list.reject! { |rent| rent.rental_modifications.nil? }
-    modif_list = rents_list.map do |rent|
+    rents_list.map do |rent|
       rent.rental_modifications.map(&:to_hash)
     end.flatten
   end

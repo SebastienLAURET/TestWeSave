@@ -26,12 +26,12 @@ module Drivy
 
       attr_accessor :rental_id, :rent
 
-      def initialize(rent_modif_dict, rent)
-        @id = rent_modif_dict[ID]
-        @rental_id = rent_modif_dict[RENTAL_ID]
-        @start_date = Time.parse(rent_modif_dict[START_DATE]) unless rent_modif_dict[START_DATE].nil?
-        @end_date = Time.parse(rent_modif_dict[END_DATE]) unless rent_modif_dict[END_DATE].nil?
-        @distance = rent_modif_dict[DISTANCE]
+      def initialize(modif_dict, rent)
+        @id = modif_dict[ID]
+        @rental_id = modif_dict[RENTAL_ID]
+        @start_date = Time.parse(modif_dict[START_DATE]) unless modif_dict[START_DATE].nil?
+        @end_date = Time.parse(modif_dict[END_DATE]) unless modif_dict[END_DATE].nil?
+        @distance = modif_dict[DISTANCE]
         @rent = rent
       end
 
@@ -75,16 +75,7 @@ module Drivy
       end
 
       def to_hash
-        new_hach = {}
-        new_hach[ID] = @id
-        new_hach[START_DATE] = @start_date unless @start_date.nil?
-        new_hach[END_DATE] = @end_date unless @end_date.nil?
-        new_hach[DISTANCE] = @distance unless @distance.nil?
-        new_hach[DEDUCTIBLE_REDUCTION] = @deductible_reduction unless @deductible_reduction.nil?
-        new_hach[PRICE] = calculate_price
-        new_hach[COMMISSION] = calculate_commission.to_hash
-        new_hach[OPTIONS] = calculate_options.to_hash
-        new_hach[ACTIONS] = generate_actions_list.map(&:to_hash)
+        new_hach = super
         new_hach[RENTAL_ID] = @rental_id
         new_hach
       end
